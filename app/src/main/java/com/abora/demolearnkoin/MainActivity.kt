@@ -2,6 +2,7 @@ package com.abora.demolearnkoin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -18,18 +19,34 @@ class MainActivity : AppCompatActivity() {
         userAdapter = PostsAdapter()
         recyclerview.adapter = userAdapter
 
-        mainViewModel.userList.observe(this, Observer {
 
+        mainViewModel.fetchPosts()
+
+        observe()
+
+    }
+
+    private fun observe() {
+
+        mainViewModel.userList.observe(this, Observer {
             it?.let {
+                shimmerFrameLayout.stopShimmerAnimation()
+                shimmerFrameLayout.visibility = View.GONE
                 userAdapter.setItems(it)
             }
 
         })
 
-        mainViewModel.fetchPosts()
-
-
-
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        shimmerFrameLayout.startShimmerAnimation()
+    }
+
+    override fun onPause() {
+        shimmerFrameLayout.stopShimmerAnimation()
+        super.onPause()
+    }
 }
